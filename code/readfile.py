@@ -1,4 +1,4 @@
-# encoding=utf-8
+
 import pandas as pd
 import time
 
@@ -33,6 +33,7 @@ if __name__ == '__main__':
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     training_data, testing_data = readfile(filename,sep,names=names)
+    print training_data['news_title']
 
 
 
