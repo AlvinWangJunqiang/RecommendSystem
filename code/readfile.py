@@ -50,12 +50,18 @@ def getFreqDict(data, id, content):
     return freq_dict
 
 
-def get_user_feature(file_name, training_data):
-    same_user = np.load(file_name).item()
+def create_user_feature(file_name, training_data):
+    # same_user = np.load(file_name).item()
     user_id_news = training_data.loc[:, ['user_id', 'news_content']]
     grouped = user_id_news.groupby('user_id')
-    for name, value in grouped:
-        print name
+    user_dict = {}
+    for name, df in grouped:
+        strs = [content for id, content in df.values]
+        strs = '.'.join(strs)
+        features = set(jieba.analyse.extract_tags(strs, topK=10))
+        user_dict[name] = features
+    np.save(file_name, user_dict)
+
 
 
 if __name__ == '__main__':
@@ -70,4 +76,7 @@ if __name__ == '__main__':
         np.save(filepath, training_data_freq_dict)
     freqdict = np.load(filepath)
 
-    get_user_feature('../data/same_user.npy', training_data)
+    feature_path = '../data/user_feature.npy'
+    if not os.path.exists(feature_path):
+        create_user_feature(feature_path, training_data)
+
