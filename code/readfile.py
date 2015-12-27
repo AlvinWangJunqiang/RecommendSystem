@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import time
 import os
-#import jieba.analyse
-#import jieba.posseg as pseg
+
+import jieba.analyse
+from collections import Counter
 
 
 def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:00"):
@@ -55,19 +56,41 @@ def createFreqDict(file_name, data):
 
 
 def create_user_feature(file_name, training_data):
+    '''
+
+    :param file_name:
+    :param training_data:
+    :return:
+    '''
     # same_user = np.load(file_name).item()
     user_id_news = training_data.loc[:, ['user_id', 'news_content']]
     grouped = user_id_news.groupby('user_id')
     user_dict = {}
-    counter = 0
+
     for name, df in grouped:
         strs = [content for id, content in df.values]
         strs = '.'.join(strs)
         features = set(jieba.analyse.extract_tags(strs, topK=10))
-        counter += 1
-        print counter
+
         user_dict[name] = features
     np.save(file_name, user_dict)
+
+
+def create_hot_news_rank(data, time_start=1394788902, time_range=100000):
+    '''
+
+    :param data:
+    :param time_start:
+    :param time_range:
+    :return: 返回新闻在给定时间出现次数的Counter计数器
+    '''
+    news_id_pubtime = data.loc[:, ['news_id', 'read_time']]
+    news = news_id_pubtime[news_id_pubtime['read_time'] < time_start + time_range]
+    news = news[news['read_time'] > time_start]
+    newsid = news.loc[:, 'news_id']
+    counter = Counter(newsid.values)
+    return counter
+
 
 
 if __name__ == '__main__':
@@ -75,6 +98,7 @@ if __name__ == '__main__':
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = readfile(filename, sep, names=names)
+
 
     filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
@@ -100,5 +124,15 @@ if __name__ == '__main__':
 #        create_user_feature(feature_path, training_data)
 #    user_feature = np.load(feature_path).item()
     
-    # strstr = "北京天南门发生了暴恐事件, 很多人被打死了,天空飘舞着雪白的内裤和胸罩"
-    # words = pseg.cut(strstr)
+
+    # filepath = '../data/testing_data_freq_dict.npy'
+    # if not os.path.exists(filepath):
+    #     createFreqDict(file_name=filepath, data=testing_data)
+    #
+    # feature_path = '../data/user_feature.npy'
+    # if not os.path.exists(feature_path):
+    #     create_user_feature(feature_path, training_data)
+    # user_feature = np.load(feature_path).item()
+
+    create_hot_news_rank(training_data)
+
