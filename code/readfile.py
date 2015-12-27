@@ -5,6 +5,7 @@ import time
 import os
 import jieba.analyse
 
+
 def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:00"):
     '''
 
@@ -31,6 +32,7 @@ def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:
 
     return raw_data, training_data, testing_data
 
+
 def getFreqDict(data, id, content):
     '''
 
@@ -48,6 +50,14 @@ def getFreqDict(data, id, content):
     return freq_dict
 
 
+def get_user_feature(file_name, training_data):
+    same_user = np.load(file_name).item()
+    user_id_news = training_data.loc[:, ['user_id', 'news_content']]
+    grouped = user_id_news.groupby('user_id')
+    for name, value in grouped:
+        print name
+
+
 if __name__ == '__main__':
     filename = '../data/user_click_data.txt'
     sep = '\t'
@@ -59,4 +69,5 @@ if __name__ == '__main__':
         training_data_freq_dict = getFreqDict(training_data, 'news_id', 'news_content')
         np.save(filepath, training_data_freq_dict)
     freqdict = np.load(filepath)
-    print freqdict
+
+    get_user_feature('../data/same_user.npy', training_data)
