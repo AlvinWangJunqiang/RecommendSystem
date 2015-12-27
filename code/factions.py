@@ -45,12 +45,17 @@ news_hoter=dict_sort(news_hoter)
 hotest_100=dict(news_hoter[0:100])
 np.save('../data/hotest_100_news.npy',hotest_100)
 same_user=np.load('../data/same_user.npy').item()
+#print same_user
 #print same_user,type(same_user)
 
 hot_news_tags={'色情','AV'}
 news_tags={1:{'色情','娱乐','时尚'},2:{'暴力','AV','游戏'},3:{'教育','财经','社会'}}
 #print len(news_tags)
-user_tags={310766:{'色情','时尚'}}
+#user_tags={310766:{'色情','时尚'}}
+
+user_tags=np.load('../data/user_feature.npy').item()
+
+#print user_tags[7979008]
 
 def find_hot_news(news_tags,hot_news_tags,k):
     hot_news={}
@@ -78,9 +83,9 @@ def content_base(user_id,read_time=0,k=5):
     else:
         return hot_re(read_time)
 
-if __name__ == '__main__':
-    sims=content_base(310766,0,1)
-    print sims
+#if __name__ == '__main__':
+#    sims=content_base(310766,0,1)
+#    print sims
 
 
 
