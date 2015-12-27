@@ -40,23 +40,39 @@ b=set(B)#
 news_hoter= np.load('../data/news_hoter.npy').item()
 news_hoter=dict_sort(news_hoter)
 hotest_100=dict(news_hoter[0:100])
-
+np.save('../data/hotest_100_news.npy',hotest_100)
 same_user=np.load('../data/same_user.npy').item()
 #print same_user,type(same_user)
-news_tags={1:{'色情','娱乐','时尚'},2:{'暴力','AV','游戏'}}
+
+hot_news_tags={'色情','AV'}
+news_tags={1:{'色情','娱乐','时尚'},2:{'暴力','AV','游戏'},3:{'教育','财经','社会'}}
 #print len(news_tags)
 user_tags={310766:{'色情','时尚'}}
+
+def find_hot_news(news_tags,hot_news_tags,k):
+    hot_news={}
+    for key in news_tags.keys():
+        if tagssim(news_tags[key],hot_news_tags)>=k:
+            hot_news[key]=news_tags[key]
+    return hot_news
+
+hot_news=find_hot_news(news_tags,hot_news_tags,1)
+    
+
 
 def cbr(user_id):
     sims={}
     for key in news_tags.keys():
         sims[key]=tagssim(user_tags[user_id],news_tags[key])
     return sims    
+
+#def hot_re(read_time):
+    
 def content_base(user_id,read_time=0):
     if user_id in same_user:
         return cbr(user_id)
-#    else:
-#        return hoter(read_time)
+    else:
+        return hot_re(read_time)
 
 sims=content_base(310766)
 print sims
