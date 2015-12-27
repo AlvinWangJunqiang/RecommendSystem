@@ -1,9 +1,11 @@
-import collections
+# encoding=utf-8
 import pandas as pd
-import time
 import numpy as np
+import time
+import os
+import jieba.analyse
 
-def readfile(filename, sep, headers=None, names=None, septime = "2014-03-20 23:59:00"):
+def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:00"):
     '''
 
     :param filename: The file which stores the data to be used
@@ -14,7 +16,8 @@ def readfile(filename, sep, headers=None, names=None, septime = "2014-03-20 23:5
     :return: The data before sep time and after sep time
     '''
 
-    raw_data = pd.read_table(filename, sep='\t', header=None, names=names)
+    raw_data = pd.read_table(filename, sep='\t', header=None, names=names).dropna(how='any')
+
     read_times = raw_data['read_time']
     sep_time = "2014-03-20 23:59:00"
     time_array = time.strptime(sep_time, "%Y-%m-%d %H:%M:%S")
@@ -26,27 +29,34 @@ def readfile(filename, sep, headers=None, names=None, septime = "2014-03-20 23:5
     training_data = raw_data.drop(index_after_sep_time)
     testing_data = raw_data.drop(index_before_sep_time)
 
-    return training_data, testing_data
+    return raw_data, training_data, testing_data
+
+def getFreqDict(data, id, content):
+    '''
+
+    :param data:  The DataFrame where id and content exist
+    :param id: The id of news
+    :param content: The content of news
+    :return: The frequence dict of each news
+    '''
+
+    news_id_content = data.loc[:, [id, content]].drop_duplicates().values
+
+    freq_dict = {}
+    for id, content in news_id_content:
+        freq_dict[id] = set(jieba.analyse.extract_tags(content, topK=10))
+    return freq_dict
+
 
 if __name__ == '__main__':
     filename = '../data/user_click_data.txt'
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
-    training_data, testing_data = readfile(filename,sep,names=names)
-    tran_news_id= list(training_data['news_id'].values)
-    test_news_id= list(testing_data['news_id'].values)
-    news_id_list=tran_news_id+test_news_id
-    #print len(news_id_list)
-    test_user=set(list(testing_data['user_id'].values))
-    tran_user=set(list(training_data['user_id'].values))
-    same_user=set()
-    for user in test_user:
-        if user in tran_user:
-            same_user.add(user)
-    print same_user,len(same_user),len(test_user)
-    np.save('../data/same_user.npy', same_user)
-    counter=collections.Counter(news_id_list)
-    news_hoter=dict(counter)
-    #print news_hoter[100648598]
-    np.save('news_hoter.npy', news_hoter)
+    raw_data, training_data, testing_data = readfile(filename, sep, names=names)
 
+    filepath = '../data/training_data_freq_dict.npy'
+    if not os.path.exists(filepath):
+        training_data_freq_dict = getFreqDict(training_data, 'news_id', 'news_content')
+        np.save(filepath, training_data_freq_dict)
+    freqdict = np.load(filepath)
+    print freqdict
