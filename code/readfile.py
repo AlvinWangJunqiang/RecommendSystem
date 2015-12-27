@@ -89,7 +89,8 @@ def get_hot_news_rank(data, k=3, time_end=1394788902, time_range=100000, ):
     news = news[news['read_time'] > time_end - time_range]
     newsid = news.loc[:, 'news_id']
     counter = Counter(newsid.values)
-    return counter.most_common(k)
+    result = [ituple[0] for ituple in counter.most_common(k)]
+    return result
 
 
 if __name__ == '__main__':
