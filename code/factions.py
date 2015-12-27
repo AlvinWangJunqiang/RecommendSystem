@@ -21,7 +21,7 @@ def calsim(VecA,VecB):
     return sim
 A=[1,0,1]
 B=[-2,0,-2]
-print calsim(A,B)    
+#print calsim(A,B)    
 
 def tagssim(SetA,SetB):
     sim=0
@@ -30,14 +30,36 @@ def tagssim(SetA,SetB):
             sim=sim+1
     return sim
 
+def dict_sort(dic):
+    return sorted(dic.items(), key=itemgetter(1), reverse=True)
+
 a=set(A)
-b=set(B)
-print tagssim(a,b)
+b=set(B)#
+#print tagssim(a,b)
 
 news_hoter= np.load('../data/news_hoter.npy').item()
-news_hoter=sorted(news_hoter.items(), key=itemgetter(1), reverse=True)
+news_hoter=dict_sort(news_hoter)
 hotest_100=dict(news_hoter[0:100])
 
+same_user=np.load('../data/same_user.npy').item()
+#print same_user,type(same_user)
+news_tags={1:{'色情','娱乐','时尚'},2:{'暴力','AV','游戏'}}
+#print len(news_tags)
+user_tags={310766:{'色情','时尚'}}
+
+def cbr(user_id):
+    sims={}
+    for key in news_tags.keys():
+        sims[key]=tagssim(user_tags[user_id],news_tags[key])
+    return sims    
+def content_base(user_id,read_time=0):
+    if user_id in same_user:
+        return cbr(user_id)
+#    else:
+#        return hoter(read_time)
+
+sims=content_base(310766)
+print sims
 
 
 
@@ -45,11 +67,3 @@ hotest_100=dict(news_hoter[0:100])
 
 
 
-
-
-
-
-
-
-    
-    
