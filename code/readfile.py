@@ -4,6 +4,7 @@ import numpy as np
 import time
 import os
 import jieba.analyse
+import jieba.posseg as pseg
 
 
 def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:00"):
@@ -33,7 +34,7 @@ def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:
     return raw_data, training_data, testing_data
 
 
-def getFreqDict(data, id, content):
+def createFreqDict(file_name, data):
     '''
 
     :param data:  The DataFrame where id and content exist
@@ -42,12 +43,15 @@ def getFreqDict(data, id, content):
     :return: The frequence dict of each news
     '''
 
+    id = 'news_id'
+    content = 'news_content'
     news_id_content = data.loc[:, [id, content]].drop_duplicates().values
 
     freq_dict = {}
     for id, content in news_id_content:
         freq_dict[id] = set(jieba.analyse.extract_tags(content, topK=10))
-    return freq_dict
+
+    np.save(file_name, freq_dict)
 
 
 def create_user_feature(file_name, training_data):
@@ -55,13 +59,15 @@ def create_user_feature(file_name, training_data):
     user_id_news = training_data.loc[:, ['user_id', 'news_content']]
     grouped = user_id_news.groupby('user_id')
     user_dict = {}
+    counter = 0
     for name, df in grouped:
         strs = [content for id, content in df.values]
         strs = '.'.join(strs)
         features = set(jieba.analyse.extract_tags(strs, topK=10))
+        counter += 1
+        print counter
         user_dict[name] = features
     np.save(file_name, user_dict)
-
 
 
 if __name__ == '__main__':
@@ -70,13 +76,14 @@ if __name__ == '__main__':
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = readfile(filename, sep, names=names)
 
-    filepath = '../data/training_data_freq_dict.npy'
+    filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
-        training_data_freq_dict = getFreqDict(training_data, 'news_id', 'news_content')
-        np.save(filepath, training_data_freq_dict)
-    freqdict = np.load(filepath)
+        createFreqDict(file_name=filepath, data=testing_data)
 
     feature_path = '../data/user_feature.npy'
     if not os.path.exists(feature_path):
         create_user_feature(feature_path, training_data)
+    user_feature = np.load(feature_path).item()
 
+    # strstr = "北京天南门发生了暴恐事件, 很多人被打死了,天空飘舞着雪白的内裤和胸罩"
+    # words = pseg.cut(strstr)
