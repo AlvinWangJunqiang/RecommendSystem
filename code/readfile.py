@@ -76,7 +76,24 @@ def create_user_feature(file_name, training_data):
     np.save(file_name, user_dict)
 
 
-def get_hot_news_rank(data, k=3, time_end=1394788902, time_range=100000, ):
+def create_test_user_time_table(file_name, testing_data):
+    '''
+
+    :param file_name:
+    :param training_data:
+    :return:
+    '''
+    # same_user = np.load(file_name).item()
+    user_id_news = training_data.loc[:, ['user_id', 'read_time']]
+    user_dict = {}
+
+    for userid, readtime in user_id_news.values:
+        user_dict[userid] = readtime
+    np.save(file_name, user_dict)
+
+
+
+def get_hot_news_rank(data, k=3, time_end=1394788902, days = 1 ):
     '''
 
     :param data:
@@ -84,6 +101,7 @@ def get_hot_news_rank(data, k=3, time_end=1394788902, time_range=100000, ):
     :param time_range:
     :return: 返回新闻在给定时间出现次数的Counter计数器
     '''
+    time_range = days * 24 * 3600
     news_id_pubtime = data.loc[:, ['news_id', 'read_time']]
     news = news_id_pubtime[news_id_pubtime['read_time'] < time_end]
     news = news[news['read_time'] > time_end - time_range]
@@ -137,3 +155,5 @@ if __name__ == '__main__':
     # user_feature = np.load(feature_path).item()
 
     get_hot_news_rank(training_data)
+    filename = '../data/user_time_test_table.npy'
+    create_test_user_time_table(filename, testing_data)
