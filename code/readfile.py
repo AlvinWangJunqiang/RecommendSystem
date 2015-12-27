@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 
-import jieba.analyse
+
 from collections import Counter
 
 
@@ -98,6 +98,8 @@ if __name__ == '__main__':
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = readfile(filename, sep, names=names)
+    
+    import jieba.analyse
 
 
     filepath = '../data/testing_data_freq_dict.npy'
