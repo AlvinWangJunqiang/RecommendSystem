@@ -36,7 +36,7 @@ def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:
 
 def createFreqDict(file_name, data):
     '''
-
+    计算新闻的TFIDF值,返回每个新闻值最大的前10个关键词
     :param data:  The DataFrame where id and content exist
     :param id: The id of news
     :param content: The content of news
@@ -56,12 +56,11 @@ def createFreqDict(file_name, data):
 
 def create_user_feature(file_name, training_data):
     '''
-
+    返回每个用户的读过的新闻中最重要的关键词
     :param file_name:
     :param training_data:
     :return:
     '''
-    # same_user = np.load(file_name).item()
     user_id_news = training_data.loc[:, ['user_id', 'news_content']]
     grouped = user_id_news.groupby('user_id')
     user_dict = {}
@@ -77,7 +76,7 @@ def create_user_feature(file_name, training_data):
 
 def create_test_user_time_table(file_name, testing_data):
     '''
-
+    返回测试集中用户id和最后一次阅读时间组成的表
     :param file_name:
     :param testing_data:
     :return:
@@ -93,6 +92,12 @@ def create_test_user_time_table(file_name, testing_data):
     np.save(file_name, user_dict)
 
 def create_news_id_read_time_table(file_name, data):
+    '''
+    返回新闻id和阅读时间对应的表
+    :param file_name:
+    :param data:
+    :return:
+    '''
     id_time = data.loc[:, ['news_id', 'read_time']]
     id_time.to_csv(file_name)
 
@@ -179,5 +184,6 @@ if __name__ == '__main__':
     get_hot_news_rank(training_data)
     filename = '../data/user_time_test_table.npy'
     create_test_user_time_table(filename, testing_data)
-    filename = '../data/news_id_time_table.csv'
-    create_news_id_read_time_table(filename, raw_data)
+    # filename = '../data/news_id_time_table.csv'
+    # create_news_id_read_time_table(filename, raw_data)
+
