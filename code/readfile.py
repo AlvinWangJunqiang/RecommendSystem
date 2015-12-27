@@ -35,6 +35,7 @@ if __name__ == '__main__':
     training_data, testing_data = readfile(filename,sep,names=names)
     tran_news_id= list(training_data['news_id'].values)
     test_news_id= list(testing_data['news_id'].values)
+    test_news_id_set=set(test_news_id)
     news_id_list=tran_news_id+test_news_id
     #print len(news_id_list)
     test_user=set(list(testing_data['user_id'].values))
@@ -43,10 +44,11 @@ if __name__ == '__main__':
     for user in test_user:
         if user in tran_user:
             same_user.add(user)
-    print same_user,len(same_user),len(test_user)
+   # print same_user,len(same_user),len(test_user),type(same_user)
     np.save('../data/same_user.npy', same_user)
-    counter=collections.Counter(news_id_list)
+    counter=collections.Counter(tran_news_id)
+    print counter
     news_hoter=dict(counter)
     #print news_hoter[100648598]
-    np.save('news_hoter.npy', news_hoter)
+    np.save('../data/news_hoter.npy', news_hoter)
 
