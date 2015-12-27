@@ -7,8 +7,8 @@ Created on Sat Dec 26 14:06:08 2015
 import collections
 from operator import itemgetter
 import numpy as np
-from readfile import get_hot_news_rank,readfile
-#import pandas as pd
+from readfile import get_hot_news_rank
+import pandas as pd
 
 oneday=24*3600
 
@@ -42,7 +42,7 @@ use_list=[]
 for use in test_user_id:
     if use not in same_user:
         use_list.append(use)
-#print use_list
+print use_list
 
 
 user_tags=np.load('../data/user_feature.npy').item()
@@ -70,15 +70,12 @@ def content_base(data, user_id,k=5):
         sims=cbr(user_id)
         return get_key(sims,k)
     else:
-        #print 1
+        print 1
         return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
 
 if __name__ == '__main__':
-    filename = '../data/user_click_data.txt'
-    sep = '\t'
-    names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
-    raw_data, training_data, testing_data = readfile(filename, sep, names=names)    
-    sims=content_base(raw_data,10657711,10)
+    raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
+    sims=content_base(raw_data,11730932,10)
     print sims
 
 
