@@ -4,7 +4,6 @@ import numpy as np
 import time
 import os
 
-
 from collections import Counter
 
 
@@ -80,20 +79,25 @@ def create_test_user_time_table(file_name, testing_data):
     '''
 
     :param file_name:
-    :param training_data:
+    :param testing_data:
     :return:
     '''
-    # same_user = np.load(file_name).item()
-    user_id_news = training_data.loc[:, ['user_id', 'read_time']]
+
+    user_id_news = testing_data.loc[:, ['user_id', 'read_time']]
+
     user_dict = {}
 
     for userid, readtime in user_id_news.values:
         user_dict[userid] = readtime
+
     np.save(file_name, user_dict)
 
+def create_news_id_read_time_table(file_name, data):
+    id_time = data.loc[:, ['news_id', 'read_time']]
+    id_time.to_csv(file_name)
 
 
-def get_hot_news_rank(data, k=3, time_end=1394788902, days = 1 ):
+def get_hot_news_rank(data, k=3, time_end=1394788902, days=1):
     '''
 
     :param data:
@@ -116,33 +120,31 @@ if __name__ == '__main__':
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = readfile(filename, sep, names=names)
-    
-    import jieba.analyse
 
+    import jieba.analyse
 
     filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
         createFreqDict(file_name=filepath, data=testing_data)
-    test_news_id=list(testing_data['news_id'].values)
-    test_read_time=list(testing_data['read_time'].values)
-    test_newstotimes=zip(test_news_id, test_read_time)
+    test_news_id = list(testing_data['news_id'].values)
+    test_read_time = list(testing_data['read_time'].values)
+    test_newstotimes = zip(test_news_id, test_read_time)
     print len(test_newstotimes)
 
+    test_user_id = set(list(testing_data['user_id'].values))
+    np.save('../data/test_user_id.npy', test_user_id)
 
-    test_user_id=set(list(testing_data['user_id'].values))
-    np.save('../data/test_user_id.npy',test_user_id)
-
-    tran_news_id=list(training_data['news_id'].values)
-    tran_read_time=list(training_data['read_time'].values)
-    tran_newstotimes=zip(tran_news_id, tran_read_time)
+    tran_news_id = list(training_data['news_id'].values)
+    tran_read_time = list(training_data['read_time'].values)
+    tran_newstotimes = zip(tran_news_id, tran_read_time)
     print len(tran_newstotimes)
-    newstotimes=test_newstotimes+tran_newstotimes
+    newstotimes = test_newstotimes + tran_newstotimes
     print len(newstotimes)
-    np.save('../data/newstotimes.npy',newstotimes)
-#    feature_path = '../data/user_feature.npy'
-#    if not os.path.exists(feature_path):
-#        create_user_feature(feature_path, training_data)
-#    user_feature = np.load(feature_path).item()
+    np.save('../data/newstotimes.npy', newstotimes)
+    #    feature_path = '../data/user_feature.npy'
+    #    if not os.path.exists(feature_path):
+    #        create_user_feature(feature_path, training_data)
+    #    user_feature = np.load(feature_path).item()
 
 
     # filepath = '../data/testing_data_freq_dict.npy'
@@ -157,3 +159,5 @@ if __name__ == '__main__':
     get_hot_news_rank(training_data)
     filename = '../data/user_time_test_table.npy'
     create_test_user_time_table(filename, testing_data)
+    filename = '../data/news_id_time_table.csv'
+    create_news_id_read_time_table(filename, raw_data)
