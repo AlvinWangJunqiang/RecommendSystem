@@ -8,7 +8,7 @@ import collections
 from operator import itemgetter
 import numpy as np
 from readfile import get_hot_news_rank,readfile
-import pandas as pd
+#import pandas as pd
 
 oneday=24*3600
 
@@ -50,7 +50,7 @@ user_tags=np.load('../data/user_feature.npy').item()
 news_tags=np.load('../data/testing_data_freq_dict.npy').item()
 
 
-
+user_time=np.load('../data/user_time_test_table.npy').item()
 
 
 
@@ -65,21 +65,20 @@ def cbr(user_id):
 
 
     
-def content_base(data, user_id,read_time=0,k=5):
+def content_base(data, user_id,k=5):
     if user_id in user_tags.keys():
         sims=cbr(user_id)
-        
         return get_key(sims,k)
     else:
-        print 1
-        return get_hot_news_rank(data, k=k, time_end = read_time)
+        #print 1
+        return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
 
 if __name__ == '__main__':
     filename = '../data/user_click_data.txt'
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = readfile(filename, sep, names=names)    
-    sims=content_base(raw_data,10730557,1395732319,4)
+    sims=content_base(raw_data,10657711,10)
     print sims
 
 

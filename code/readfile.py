@@ -124,8 +124,13 @@ if __name__ == '__main__':
     if not os.path.exists(filepath):
         createFreqDict(file_name=filepath, data=testing_data)
     test_news_id=list(testing_data['news_id'].values)
+    test_user_id=list(testing_data['user_id'].values)
+    
     test_read_time=list(testing_data['read_time'].values)
     test_newstotimes=zip(test_news_id, test_read_time)
+    user_news=zip(test_user_id,test_news_id)
+    #print user_news
+    np.save('../data/user_news.npy',user_news)
     print len(test_newstotimes)
 
 
@@ -139,6 +144,10 @@ if __name__ == '__main__':
     newstotimes=test_newstotimes+tran_newstotimes
     print len(newstotimes)
     np.save('../data/newstotimes.npy',newstotimes)
+    
+    
+    
+    
 #    feature_path = '../data/user_feature.npy'
 #    if not os.path.exists(feature_path):
 #        create_user_feature(feature_path, training_data)
