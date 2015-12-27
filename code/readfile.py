@@ -1,7 +1,7 @@
-
+import collections
 import pandas as pd
 import time
-
+import numpy as np
 
 def readfile(filename, sep, headers=None, names=None, septime = "2014-03-20 23:59:00"):
     '''
@@ -33,7 +33,20 @@ if __name__ == '__main__':
     sep = '\t'
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     training_data, testing_data = readfile(filename,sep,names=names)
-    print training_data['news_title']
-
-
+    tran_news_id= list(training_data['news_id'].values)
+    test_news_id= list(testing_data['news_id'].values)
+    news_id_list=tran_news_id+test_news_id
+    #print len(news_id_list)
+    test_user=set(list(testing_data['user_id'].values))
+    tran_user=set(list(training_data['user_id'].values))
+    same_user=set()
+    for user in test_user:
+        if user in tran_user:
+            same_user.add(user)
+    print same_user,len(same_user),len(test_user)
+    np.save('../data/same_user.npy', same_user)
+    counter=collections.Counter(news_id_list)
+    news_hoter=dict(counter)
+    #print news_hoter[100648598]
+    np.save('news_hoter.npy', news_hoter)
 
