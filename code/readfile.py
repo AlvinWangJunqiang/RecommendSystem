@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 import time
 import os
-import jieba.analyse
-import jieba.posseg as pseg
+#import jieba.analyse
+#import jieba.posseg as pseg
 
 
 def readfile(filename, sep, headers=None, names=None, septime="2014-03-20 23:59:00"):
@@ -79,11 +79,26 @@ if __name__ == '__main__':
     filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
         createFreqDict(file_name=filepath, data=testing_data)
-
-    feature_path = '../data/user_feature.npy'
-    if not os.path.exists(feature_path):
-        create_user_feature(feature_path, training_data)
-    user_feature = np.load(feature_path).item()
-
+    test_news_id=list(testing_data['news_id'].values)
+    test_read_time=list(testing_data['read_time'].values)
+    test_newstotimes=zip(test_news_id, test_read_time)
+    print len(test_newstotimes)
+    
+    
+    test_user_id=set(list(testing_data['user_id'].values))
+    np.save('../data/test_user_id.npy',test_user_id)
+    
+    tran_news_id=list(training_data['news_id'].values)
+    tran_read_time=list(training_data['read_time'].values)
+    tran_newstotimes=zip(tran_news_id, tran_read_time)
+    print len(tran_newstotimes)
+    newstotimes=test_newstotimes+tran_newstotimes
+    print len(newstotimes)
+    np.save('../data/newstotimes.npy',newstotimes)
+#    feature_path = '../data/user_feature.npy'
+#    if not os.path.exists(feature_path):
+#        create_user_feature(feature_path, training_data)
+#    user_feature = np.load(feature_path).item()
+    
     # strstr = "北京天南门发生了暴恐事件, 很多人被打死了,天空飘舞着雪白的内裤和胸罩"
     # words = pseg.cut(strstr)

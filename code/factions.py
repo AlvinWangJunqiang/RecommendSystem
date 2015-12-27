@@ -4,8 +4,10 @@ Created on Sat Dec 26 14:06:08 2015
 
 @author: Ldy
 """
+import collections
 from operator import itemgetter
 import numpy as np
+lastday=24*3600
 def calsim(VecA,VecB):
     Vsum=0.
     MAsum=0.
@@ -19,9 +21,6 @@ def calsim(VecA,VecB):
     else:
         sim=Vsum/((MAsum**0.5)*(MBsum**0.5))
     return sim
-A=[1,0,1]
-B=[-2,0,-2]
-#print calsim(A,B)    
 
 def tagssim(SetA,SetB):
     sim=0
@@ -35,9 +34,10 @@ def dict_sort(dic):
 
 def get_key(dic,k):
     return map(itemgetter(0), sorted(dic.items(), key=itemgetter(1), reverse=True))[:k]
-a=set(A)
-b=set(B)#
-#print tagssim(a,b)
+
+def count_list(a):
+    counter=collections.Counter(a)
+    return dict(counter)
 
 news_hoter= np.load('../data/news_hoter.npy').item()
 news_hoter=dict_sort(news_hoter)
@@ -47,13 +47,17 @@ np.save('../data/hotest_100_news.npy',hotest_100)
 same_user=np.load('../data/same_user.npy').item()
 #print same_user
 #print same_user,type(same_user)
-
-hot_news_tags={'色情','AV'}
-news_tags={1:{'色情','娱乐','时尚'},2:{'暴力','AV','游戏'},3:{'教育','财经','社会'}}
 #print len(news_tags)
 #user_tags={310766:{'色情','时尚'}}
 
 user_tags=np.load('../data/user_feature.npy').item()
+
+news_tags=np.load('../data/testing_data_freq_dict.npy').item()
+
+news_id2times=np.load('../data/newstotimes.npy')
+print news_id2times
+
+test_user_id=np.load('../data/test_user_id.npy').item()
 
 #print user_tags[7979008]
 
@@ -64,28 +68,33 @@ def find_hot_news(news_tags,hot_news_tags,k):
             hot_news[key]=news_tags[key]
     return hot_news
 
-hot_news=find_hot_news(news_tags,hot_news_tags,1)
+#hot_news=find_hot_news(news_tags,hot_news_tags,1)
     
 def cbr(user_id):
     sims={}
     for key in news_tags.keys():
         sims[key]=tagssim(user_tags[user_id],news_tags[key])
     return sims    
-
-def hot_re(read_time):
-    return 0
+test=[(1,2),(1,2)]
+def hot_re(news_id2times,read_time,k):
+    news_id_list=[]
+    for i in xrange(news_id2times):
+        if read_time-lastday<news_id2times[i][1]<read_time:
+            news_id_list.append(news_id2times[i][0])
+    dic=count_list(news_id_list)
+        
+    return get_key(dic,k)
     
 def content_base(user_id,read_time=0,k=5):
-    if user_id in same_user:
+    if user_id in user_tags.keys():
         sims=cbr(user_id)
-        print sims
         return get_key(sims,k)
     else:
-        return hot_re(read_time)
+        return hot_re(news_id2times,read_time,k)
 
-#if __name__ == '__main__':
-#    sims=content_base(310766,0,1)
-#    print sims
+if __name__ == '__main__':
+    sims=content_base(344047,0,4)
+    print sims
 
 
 
