@@ -61,8 +61,6 @@ def find_hot_news(news_tags,hot_news_tags,k):
 
 hot_news=find_hot_news(news_tags,hot_news_tags,1)
     
-
-
 def cbr(user_id):
     sims={}
     for key in news_tags.keys():
@@ -80,8 +78,9 @@ def content_base(user_id,read_time=0,k=5):
     else:
         return hot_re(read_time)
 
-sims=content_base(310766,0,1)
-print sims
+if __name__ == '__main__':
+    sims=content_base(310766,0,1)
+    print sims
 
 
 
