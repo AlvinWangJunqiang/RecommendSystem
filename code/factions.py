@@ -33,12 +33,15 @@ def tagssim(SetA,SetB):
 def dict_sort(dic):
     return sorted(dic.items(), key=itemgetter(1), reverse=True)
 
+def get_key(dic,k):
+    return map(itemgetter(0), sorted(dic.items(), key=itemgetter(1), reverse=True))[:k]
 a=set(A)
 b=set(B)#
 #print tagssim(a,b)
 
 news_hoter= np.load('../data/news_hoter.npy').item()
 news_hoter=dict_sort(news_hoter)
+#print type(news_hoter),news_hoter
 hotest_100=dict(news_hoter[0:100])
 np.save('../data/hotest_100_news.npy',hotest_100)
 same_user=np.load('../data/same_user.npy').item()
@@ -66,17 +69,19 @@ def cbr(user_id):
         sims[key]=tagssim(user_tags[user_id],news_tags[key])
     return sims    
 
-#def hot_re(read_time):
+def hot_re(read_time):
+    return 0
     
-def content_base(user_id,read_time=0):
+def content_base(user_id,read_time=0,k=5):
     if user_id in same_user:
-        return cbr(user_id)
+        sims=cbr(user_id)
+        print sims
+        return get_key(sims,k)
     else:
         return hot_re(read_time)
 
-sims=content_base(310766)
+sims=content_base(310766,0,1)
 print sims
-
 
 
 
