@@ -75,7 +75,7 @@ def create_user_feature(file_name, training_data):
     np.save(file_name, user_dict)
 
 
-def create_hot_news_rank(data, time_start=1394788902, time_range=100000):
+def get_hot_news_rank(data, k=3, time_end=1394788902, time_range=100000, ):
     '''
 
     :param data:
@@ -84,12 +84,11 @@ def create_hot_news_rank(data, time_start=1394788902, time_range=100000):
     :return: 返回新闻在给定时间出现次数的Counter计数器
     '''
     news_id_pubtime = data.loc[:, ['news_id', 'read_time']]
-    news = news_id_pubtime[news_id_pubtime['read_time'] < time_start + time_range]
-    news = news[news['read_time'] > time_start]
+    news = news_id_pubtime[news_id_pubtime['read_time'] < time_end]
+    news = news[news['read_time'] > time_end - time_range]
     newsid = news.loc[:, 'news_id']
     counter = Counter(newsid.values)
-    return counter
-
+    return counter.most_common(k)
 
 
 if __name__ == '__main__':
@@ -107,4 +106,4 @@ if __name__ == '__main__':
     #     create_user_feature(feature_path, training_data)
     # user_feature = np.load(feature_path).item()
 
-    create_hot_news_rank(training_data)
+    get_hot_news_rank(training_data)
