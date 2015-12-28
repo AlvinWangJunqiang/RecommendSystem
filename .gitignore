@@ -1,3 +1,4 @@
 data/user_click_data.txt
 
 .idea/workspace.xml
+*.pyc
