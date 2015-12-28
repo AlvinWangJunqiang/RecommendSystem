@@ -49,6 +49,7 @@ user_tags = np.load('../data/user_feature.npy').item()
 
 # 导入由新闻及其对应最高TFIDFT值的关键字组成的表
 news_tags = np.load('../data/testing_data_freq_dict.npy').item()
+print len(news_tags)
 
 # 导入测试数据集中由用户id和用户登录(点击)时间组成的表
 user_time = np.load('../data/user_time_test_table.npy').item()
@@ -151,7 +152,7 @@ def Rs_test(k):
 
         else:
             m = len(user_news_dict[user_id])
-        if i >= m / 2:
+        if i >= m/2:
             n1 = n1 + 1
     n2 = 0
     user_num = 0
@@ -168,6 +169,7 @@ def Rs_test(k):
         if len(user_news_dict[user_id]) > k:
             m = k
         else:
+
             m = len(user_news_dict[user_id])
         if i >= m / 2:
             n2 = n2 + 1
