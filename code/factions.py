@@ -7,7 +7,7 @@ Created on Sat Dec 26 14:06:08 2015
 import collections
 from operator import itemgetter
 import numpy as np
-from readfile import get_hot_news_rank
+from readfile import get_hot_news_rank_table
 import pandas as pd
 
 
@@ -87,14 +87,14 @@ def content_base(data, user_id,k=5):
         return get_key(sims,k)
     else:
         #print 1
-        return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
+        return get_hot_news_rank_table(data, k=k, time_end = user_time[user_id], days=1)
 
 def UUCF(data, user_id,k=5):
     if user_id in U2U_tags.keys():
         sims=cbr(user_id,U2U_tags)
         return get_key(sims,k)
     else:
-        return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
+        return get_hot_news_rank_table(data, k=k, time_end = user_time[user_id], days=1)
 
 
 if __name__ == '__main__':
