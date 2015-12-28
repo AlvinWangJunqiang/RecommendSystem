@@ -127,12 +127,12 @@ if __name__ == '__main__':
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = get_data(filename, sep, names=names)
 
+
     import jieba.analyse
 
     filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
         create_TFIDF_table(file_name=filepath, data=testing_data)
-
     test_news_id = list(testing_data['news_id'].values)
     test_user_id = list(testing_data['user_id'].values)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         user_news_dict[user] = set()
     for i in xrange(len(user_news)):
         user_news_dict[user_news[i][0]].add(user_news[i][1])
-    print user_news_dict, user_news_dict[2185529]
+
     np.save('../data/user_news_dict.npy', user_news_dict)
     # print user_news
     np.save('../data/user_news.npy', user_news)
@@ -175,6 +175,7 @@ if __name__ == '__main__':
     if not os.path.exists(feature_path):
         create_user_feature_table(feature_path, training_data)
     user_feature = np.load(feature_path).item()
+
 
     np.save('../data/newstotimes.npy', newstotimes)
     #    feature_path = '../data/user_feature.npy'
