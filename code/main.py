@@ -12,7 +12,9 @@ import numpy as np
 from readfile import get_hot_news_rank_table
 import pandas as pd
 import sys
+import logging
 
+logging.basicConfig(filename='recommend.log', format='(%(levelname)s:%(asctime)%:%(message)s)', datefmt='%m/%d/%Y %I:%M:%S %p',level=logging.DEBUG)
 
 def tagssim(SetA, SetB):
     '''
@@ -49,7 +51,7 @@ user_tags = np.load('../data/user_feature.npy').item()
 
 # 导入由新闻及其对应最高TFIDFT值的关键字组成的表
 news_tags = np.load('../data/testing_data_freq_dict.npy').item()
-print len(news_tags)
+
 
 # 导入测试数据集中由用户id和用户登录(点击)时间组成的表
 user_time = np.load('../data/user_time_test_table.npy').item()
@@ -179,13 +181,28 @@ def Rs_test(k):
 if __name__ == '__main__':
     parse = argparse.ArgumentParser(description=u'呵呵')
     parse.add_argument('-m', '--method', help='Method of Recommend\n cb: contentbased\ncf: Collaborative filtering')
-    parse.add_argument('-i', '--userid', help="The user's id to be recommended, such as 3506171 436906")
+    parse.add_argument('-i', '--userid', type=int, help="The user's id to be recommended, such as 3506171 436906")
 
     args = parse.parse_args()
-    if (not args.method in ['cb', 'cf']) or (args.userid == None) :
+
+
+    users = user_tags.keys()
+    if (args.method not in ['cb', 'cf']) or (args.userid not in users):
         print parse.print_help()
         sys.exit()
 
-
     raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:, ['news_id', 'read_time']]
+
+    if args.method == 'cf':
+        news_ids = UUCF(raw_data, args.userid)
+    elif args.method == 'cb':
+        news_ids = content_base(raw_data, args.userid)
+    news_id_title = np.load('../data/news_id_title.npy').item()
+    print "向用户`{id}`推荐如下{k}篇新闻".format(id=args.userid, k=5)
+    string = '{num}.新闻id:`{id}`\t标题:{title}'
+    for item, news_id in enumerate(news_ids):
+        outputstr = string.format(num=item, id=news_id, title=news_id_title[news_id])
+        print outputstr
+        logging.debug(outputstr)
+
     # print Rs_test(20)

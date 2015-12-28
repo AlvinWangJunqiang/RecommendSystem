@@ -127,6 +127,17 @@ if __name__ == '__main__':
     names = ['user_id', 'news_id', 'read_time', 'news_title', 'news_content', 'news_publi_time']
     raw_data, training_data, testing_data = get_data(filename, sep, names=names)
 
+    news_id_title = raw_data.loc[:, ['news_id', 'news_title']].drop_duplicates()
+
+    news_id_title = news_id_title.values.tolist()
+    idtitledict = {}
+    for value in news_id_title:
+        idtitledict[value[0]] = value[1]
+
+    np.save('../data/news_id_title.npy', idtitledict)
+
+
+
 
     import jieba.analyse
 
