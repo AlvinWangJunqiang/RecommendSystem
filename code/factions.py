@@ -43,7 +43,7 @@ diff_user = np.load('../data/diff_user.npy').item()
 
 # 导入用户特征表
 user_tags = np.load('../data/user_feature.npy').item()
-
+print user_tags[2809511]
 # 导入由新闻及其对应最高TFIDFT值的关键字组成的表
 news_tags = np.load('../data/testing_data_freq_dict.npy').item()
 
@@ -57,7 +57,7 @@ U2U_tags = np.load('../data/U2U_tags.npy').item()
 
 # 导入测试数据集和训练数据集中同时出现过的用户的集合表
 same_user = np.load('../data/same_user.npy').item()
-
+#print same_user
 # 导入测试集中用户id和新闻id组成的表
 user_news_dict = np.load('../data/user_news_dict.npy').item()
 
@@ -173,7 +173,7 @@ def Rs_test(k):
 
 if __name__ == '__main__':
     raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
-    print Rs_test(20)
+    #print Rs_test(20)
 
 
 
