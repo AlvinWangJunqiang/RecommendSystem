@@ -67,13 +67,7 @@ def calUUsim(k):
                     print sameuse,usei,len(U2U_tags[sameuse])#,U2U_tags[sameuse]==user_tags[sameuse]
     return U2U_tags
 
-#U2U_tags=calUUsim(4)
 
-#np.save('../data/U2U_tags.npy', U2U_tags)
-
-
-
-#print U2U_tags
 def cbr(user_id,tags_data):
     sims={}
     for key in news_tags.keys():
@@ -96,22 +90,20 @@ def UUCF(data, user_id,k=5):
     else:
         return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
 
-
-if __name__ == '__main__':
-    raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
+def Rs_test(k):
     n1=0
     user_num=0
     for user_id in user_news_dict.keys():
         i=0
         user_num=user_num+1
         print user_num
-        result=set(content_base(raw_data,user_id,10))
+        result=set(content_base(raw_data,user_id,k))
         for news_id in result:
             if news_id in user_news_dict[user_id]:
                 i=i+1
         m=0
-        if len(user_news_dict[user_id])>10:
-            m=10
+        if len(user_news_dict[user_id])>k:
+            m=k
         else:
             m=len(user_news_dict[user_id])
         if i>=m/2:
@@ -122,28 +114,22 @@ if __name__ == '__main__':
         i=0
         user_num=user_num+1
         print user_num
-        result=set(UUCF(raw_data,user_id,10))
+        result=set(UUCF(raw_data,user_id,k))
         for news_id in result:
             if news_id in user_news_dict[user_id]:
                 i=i+1
         m=0
-        if len(user_news_dict[user_id])>10:
-            m=10
+        if len(user_news_dict[user_id])>k:
+            m=k
         else:
             m=len(user_news_dict[user_id])
         if i>=m/2:
             n2=n2+1
-    print n1,n2
-        
-#    user_id=467587
-#
-#    content=content_base(raw_data,user_id,10)
-#    
-#    UU=UUCF(raw_data,user_id,10)
-#    
-#    print content
-#    print UU
+    return n1,n2
 
+if __name__ == '__main__':
+    raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
+    print Rs_test(20)
 
 
 
