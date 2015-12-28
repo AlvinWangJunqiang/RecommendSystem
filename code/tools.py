@@ -5,7 +5,7 @@ Created on Mon Dec 28 10:41:06 2015
 @author: Ldy
 """
 
-from factions import *
+from main import *
 
 news_hoter = np.load('../data/news_hoter.npy').item()
 news_hoter = dict_sort(news_hoter)

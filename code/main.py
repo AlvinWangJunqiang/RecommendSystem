@@ -4,11 +4,14 @@ Created on Sat Dec 26 14:06:08 2015
 
 @author: Ldy
 """
+
+import argparse
 import collections
 from operator import itemgetter
 import numpy as np
 from readfile import get_hot_news_rank_table
 import pandas as pd
+import sys
 
 
 def tagssim(SetA, SetB):
@@ -43,7 +46,7 @@ diff_user = np.load('../data/diff_user.npy').item()
 
 # 导入用户特征表
 user_tags = np.load('../data/user_feature.npy').item()
-print user_tags[2809511]
+
 # 导入由新闻及其对应最高TFIDFT值的关键字组成的表
 news_tags = np.load('../data/testing_data_freq_dict.npy').item()
 
@@ -57,7 +60,7 @@ U2U_tags = np.load('../data/U2U_tags.npy').item()
 
 # 导入测试数据集和训练数据集中同时出现过的用户的集合表
 same_user = np.load('../data/same_user.npy').item()
-#print same_user
+# print same_user
 # 导入测试集中用户id和新闻id组成的表
 user_news_dict = np.load('../data/user_news_dict.npy').item()
 
@@ -81,9 +84,8 @@ def calUUsim(k):
                     sameusej = sameusej + 1
                     # print sameuse,usei,sameusej,sim
                     U2U_tags[sameuse] = set(list(user_tags[sameuse]) + list(user_tags[diffuse]))
-                    print sameuse, usei, len(U2U_tags[sameuse])  # ,U2U_tags[sameuse]==user_tags[sameuse]
+                    # print sameuse, usei, len(U2U_tags[sameuse])  # ,U2U_tags[sameuse]==user_tags[sameuse]
     return U2U_tags
-
 
 
 # print U2U_tags
@@ -131,21 +133,21 @@ def UUCF(data, user_id, k=5):
 
 
 def Rs_test(k):
-    n1=0
-    user_num=0
+    n1 = 0
+    user_num = 0
 
     for user_id in user_news_dict.keys():
         i = 0
         user_num = user_num + 1
-        print user_num
+        # print user_num
 
-        result=set(content_base(raw_data,user_id,k))
+        result = set(content_base(raw_data, user_id, k))
         for news_id in result:
             if news_id in user_news_dict[user_id]:
-                i=i+1
-        m=0
-        if len(user_news_dict[user_id])>k:
-            m=k
+                i = i + 1
+        m = 0
+        if len(user_news_dict[user_id]) > k:
+            m = k
 
         else:
             m = len(user_news_dict[user_id])
@@ -156,26 +158,32 @@ def Rs_test(k):
     for user_id in user_news_dict.keys():
         i = 0
         user_num = user_num + 1
-        print user_num
+        # print user_num
 
-        result=set(UUCF(raw_data,user_id,k))
+        result = set(UUCF(raw_data, user_id, k))
         for news_id in result:
             if news_id in user_news_dict[user_id]:
-                i=i+1
-        m=0
-        if len(user_news_dict[user_id])>k:
-            m=k
+                i = i + 1
+        m = 0
+        if len(user_news_dict[user_id]) > k:
+            m = k
         else:
-            m=len(user_news_dict[user_id])
-        if i>=m/2:
-            n2=n2+1
-    return n1,n2
+            m = len(user_news_dict[user_id])
+        if i >= m / 2:
+            n2 = n2 + 1
+    return n1, n2
+
 
 if __name__ == '__main__':
-    raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
-    #print Rs_test(20)
+    parse = argparse.ArgumentParser(description=u'呵呵')
+    parse.add_argument('-m', '--method', help='Method of Recommend\n cb: contentbased\ncf: Collaborative filtering')
+    parse.add_argument('-i', '--userid', help="The user's id to be recommended, such as 3506171 436906")
+
+    args = parse.parse_args()
+    if (not args.method in ['cb', 'cf']) or (args.userid == None) :
+        print parse.print_help()
+        sys.exit()
 
 
-
-
-
+    raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:, ['news_id', 'read_time']]
+    # print Rs_test(20)
