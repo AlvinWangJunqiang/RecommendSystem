@@ -10,7 +10,6 @@ import numpy as np
 from readfile import get_hot_news_rank
 import pandas as pd
 
-oneday=24*3600
 
 
 def tagssim(SetA,SetB):
@@ -30,54 +29,84 @@ def count_list(a):
     counter=collections.Counter(a)
     return dict(counter)
 
-news_hoter= np.load('../data/news_hoter.npy').item()
-news_hoter=dict_sort(news_hoter)
 
 
-hotest_100=dict(news_hoter[0:100])
-np.save('../data/hotest_100_news.npy',hotest_100)
-same_user=np.load('../data/same_user.npy').item()
-test_user_id=np.load('../data/test_user_id.npy').item()
-use_list=[]
-for use in test_user_id:
-    if use not in same_user:
-        use_list.append(use)
-print use_list
-
-
+ 
+diff_user=np.load('../data/diff_user.npy').item()
+#print len(diff_user)
 user_tags=np.load('../data/user_feature.npy').item()
-
+#print len(user_tags)
 news_tags=np.load('../data/testing_data_freq_dict.npy').item()
-
 
 user_time=np.load('../data/user_time_test_table.npy').item()
 
+hot_user=np.load('../data/hot_user.npy').item()
+
+U2U_tags=np.load('../data/U2U_tags.npy').item()
+
+same_user=np.load('../data/same_user.npy').item()
+
+test_user_id=np.load('../data/test_user_id.npy').item()
+
+#print test_user_id
+def calUUsim(k):
+    U2U_tags=user_tags
+    usei=0
+    for sameuse in same_user:
+        usei=usei+1
+        sameusej=0
+        for diffuse in hot_user:
+            
+            if sameuse in user_tags.keys() and diffuse in user_tags.keys():
+                sim=tagssim(user_tags[sameuse],user_tags[diffuse])
+                if sim>=k:
+                    
+                    sameusej=sameusej+1
+                    #print sameuse,usei,sameusej,sim
+                    U2U_tags[sameuse]=set(list(user_tags[sameuse])+list(user_tags[diffuse]))
+                    print sameuse,usei,len(U2U_tags[sameuse])#,U2U_tags[sameuse]==user_tags[sameuse]
+    return U2U_tags
+
+#U2U_tags=calUUsim(4)
+
+#np.save('../data/U2U_tags.npy', U2U_tags)
 
 
 
-    
-def cbr(user_id):
+#print U2U_tags
+def cbr(user_id,tags_data):
     sims={}
     for key in news_tags.keys():
-        sims[key]=tagssim(user_tags[user_id],news_tags[key])
+        sims[key]=tagssim(tags_data[user_id],news_tags[key])
     return sims    
 
-
-
-    
 def content_base(data, user_id,k=5):
     if user_id in user_tags.keys():
-        sims=cbr(user_id)
+        sims=cbr(user_id,user_tags)
+        print 1
         return get_key(sims,k)
     else:
-        print 1
+        #print 1
         return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
+
+def UUCF(data, user_id,k=5):
+    if user_id in U2U_tags.keys():
+        sims=cbr(user_id,U2U_tags)
+        return get_key(sims,k)
+    else:
+        return get_hot_news_rank(data, k=k, time_end = user_time[user_id],days=1)
+
 
 if __name__ == '__main__':
     raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
-    sims=content_base(raw_data,11730932,10)
-    print sims
+    user_id=467587
 
+    content=content_base(raw_data,user_id,10)
+    
+    UU=UUCF(raw_data,user_id,10)
+    
+    print content
+    print UU
 
 
 

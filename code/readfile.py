@@ -138,28 +138,37 @@ if __name__ == '__main__':
     test_read_time=list(testing_data['read_time'].values)
     test_newstotimes=zip(test_news_id, test_read_time)
     user_news=zip(test_user_id,test_news_id)
+    user_news_dict={}
+    for user in set(test_user_id):
+        user_news_dict[user]=set()
+    for i in xrange(len(user_news)):
+        user_news_dict[user_news[i][0]].add(user_news[i][1])
+    print user_news_dict,user_news_dict[2185529]
+    np.save('../data/user_news_dict.npy',user_news_dict)
     #print user_news
     np.save('../data/user_news.npy',user_news)
 
     test_news_id = list(testing_data['news_id'].values)
     test_read_time = list(testing_data['read_time'].values)
     test_newstotimes = zip(test_news_id, test_read_time)
-    print len(test_newstotimes)
+    #print len(test_newstotimes)
 
     test_user_id = set(list(testing_data['user_id'].values))
     np.save('../data/test_user_id.npy', test_user_id)
 
     tran_news_id = list(training_data['news_id'].values)
+    tran_user_id = set(list(training_data['user_id'].values))
+    np.save('../data/tran_user_id.npy', tran_user_id)
     tran_read_time = list(training_data['read_time'].values)
     tran_newstotimes = zip(tran_news_id, tran_read_time)
-    print len(tran_newstotimes)
+    #print len(tran_newstotimes)
     newstotimes = test_newstotimes + tran_newstotimes
-    print len(newstotimes)
+    #print len(newstotimes)
 
     np.save('../data/newstotimes.npy',newstotimes)
     
-    
-    
+    tran_user_fre = list(training_data['user_id'].values)
+    np.save('../data/tran_user_fre.npy',tran_user_fre)
     
 #    feature_path = '../data/user_feature.npy'
 #    if not os.path.exists(feature_path):
