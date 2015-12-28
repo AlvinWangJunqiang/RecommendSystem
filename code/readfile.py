@@ -128,26 +128,35 @@ if __name__ == '__main__':
     raw_data, training_data, testing_data = get_data(filename, sep, names=names)
 
 
-    import jieba.analyse
+    #import jieba.analyse
 
     filepath = '../data/testing_data_freq_dict.npy'
     if not os.path.exists(filepath):
         create_TFIDF_table(file_name=filepath, data=testing_data)
     test_news_id = list(testing_data['news_id'].values)
     test_user_id = list(testing_data['user_id'].values)
-
-    test_read_time = list(testing_data['read_time'].values)
-    test_newstotimes = zip(test_news_id, test_read_time)
-    user_news = zip(test_user_id, test_news_id)
-    user_news_dict = {}
-    for user in set(test_user_id):
-        user_news_dict[user] = set()
-    for i in xrange(len(user_news)):
-        user_news_dict[user_news[i][0]].add(user_news[i][1])
-
-    np.save('../data/user_news_dict.npy', user_news_dict)
+    test_news_title=list(testing_data['news_title'].values)
+    
+    news_id_title=zip(test_news_id, test_news_title)
+    
+    news_id_title_dict = {}
+    for news_id in set(test_news_id):
+        news_id_title_dict[news_id] = set()
+    for i in xrange(len(news_id_title)):
+        news_id_title_dict[news_id_title[i][0]].add(news_id_title[i][1])
+    
+#    test_read_time = list(testing_data['read_time'].values)
+#    test_newstotimes = zip(test_news_id, test_read_time)
+#    user_news = zip(test_user_id, test_news_id)
+#    user_news_dict = {}
+#    for user in set(test_user_id):
+#        user_news_dict[user] = set()
+#    for i in xrange(len(user_news)):
+#        user_news_dict[user_news[i][0]].add(user_news[i][1])
+    np.save('../data/news_id_title_dict.npy', news_id_title_dict)
+    #np.save('../data/user_news_dict.npy', user_news_dict)
     # print user_news
-    np.save('../data/user_news.npy', user_news)
+    #np.save('../data/user_news.npy', user_news)
 
     test_news_id = list(testing_data['news_id'].values)
     test_read_time = list(testing_data['read_time'].values)
@@ -155,21 +164,21 @@ if __name__ == '__main__':
     # print len(test_newstotimes)
 
     test_user_id = set(list(testing_data['user_id'].values))
-    np.save('../data/test_user_id.npy', test_user_id)
+    #np.save('../data/test_user_id.npy', test_user_id)
 
     tran_news_id = list(training_data['news_id'].values)
     tran_user_id = set(list(training_data['user_id'].values))
-    np.save('../data/tran_user_id.npy', tran_user_id)
+    #np.save('../data/tran_user_id.npy', tran_user_id)
     tran_read_time = list(training_data['read_time'].values)
     tran_newstotimes = zip(tran_news_id, tran_read_time)
     # print len(tran_newstotimes)
     newstotimes = test_newstotimes + tran_newstotimes
     # print len(newstotimes)
 
-    np.save('../data/newstotimes.npy', newstotimes)
+    #np.save('../data/newstotimes.npy', newstotimes)
 
     tran_user_fre = list(training_data['user_id'].values)
-    np.save('../data/tran_user_fre.npy', tran_user_fre)
+    #np.save('../data/tran_user_fre.npy', tran_user_fre)
 
     feature_path = '../data/user_feature.npy'
     if not os.path.exists(feature_path):
@@ -177,7 +186,7 @@ if __name__ == '__main__':
     user_feature = np.load(feature_path).item()
 
 
-    np.save('../data/newstotimes.npy', newstotimes)
+    #np.save('../data/newstotimes.npy', newstotimes)
     #    feature_path = '../data/user_feature.npy'
     #    if not os.path.exists(feature_path):
     #        create_user_feature(feature_path, training_data)
