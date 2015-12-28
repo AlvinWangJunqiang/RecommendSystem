@@ -46,9 +46,9 @@ U2U_tags=np.load('../data/U2U_tags.npy').item()
 
 same_user=np.load('../data/same_user.npy').item()
 
-test_user_id=np.load('../data/test_user_id.npy').item()
+user_news_dict=np.load('../data/user_news_dict.npy').item()
+print type(user_news_dict)
 
-#print test_user_id
 def calUUsim(k):
     U2U_tags=user_tags
     usei=0
@@ -83,7 +83,7 @@ def cbr(user_id,tags_data):
 def content_base(data, user_id,k=5):
     if user_id in user_tags.keys():
         sims=cbr(user_id,user_tags)
-        print 1
+        #print 1
         return get_key(sims,k)
     else:
         #print 1
@@ -99,14 +99,50 @@ def UUCF(data, user_id,k=5):
 
 if __name__ == '__main__':
     raw_data = pd.read_csv('../data/news_id_time_table.csv').loc[:,['news_id', 'read_time']] 
-    user_id=467587
-
-    content=content_base(raw_data,user_id,10)
-    
-    UU=UUCF(raw_data,user_id,10)
-    
-    print content
-    print UU
+    n1=0
+    user_num=0
+    for user_id in user_news_dict.keys():
+        i=0
+        user_num=user_num+1
+        print user_num
+        result=set(content_base(raw_data,user_id,10))
+        for news_id in result:
+            if news_id in user_news_dict[user_id]:
+                i=i+1
+        m=0
+        if len(user_news_dict[user_id])>10:
+            m=10
+        else:
+            m=len(user_news_dict[user_id])
+        if i>=m/2:
+            n1=n1+1
+    n2=0
+    user_num=0
+    for user_id in user_news_dict.keys():
+        i=0
+        user_num=user_num+1
+        print user_num
+        result=set(UUCF(raw_data,user_id,10))
+        for news_id in result:
+            if news_id in user_news_dict[user_id]:
+                i=i+1
+        m=0
+        if len(user_news_dict[user_id])>10:
+            m=10
+        else:
+            m=len(user_news_dict[user_id])
+        if i>=m/2:
+            n2=n2+1
+    print n1,n2
+        
+#    user_id=467587
+#
+#    content=content_base(raw_data,user_id,10)
+#    
+#    UU=UUCF(raw_data,user_id,10)
+#    
+#    print content
+#    print UU
 
 
 
